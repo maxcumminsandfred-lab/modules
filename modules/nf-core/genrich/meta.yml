@@ -13,7 +13,8 @@ tools:
       homepage: https://github.com/jsh58/Genrich
       documentation: https://github.com/jsh58/Genrich#readme
       tool_dev_url: https://github.com/jsh58/Genrich
-      licence: ["MIT"]
+      licence:
+        - "MIT"
       identifier: ""
 input:
   - - meta:
@@ -23,19 +24,20 @@ input:
           e.g. [ id:'test', single_end:false ]
     - treatment_bam:
         type: file
-        description: Coordinate sorted BAM/SAM file from treatment sample or list of
-          BAM/SAM files from biological replicates
+        description: Coordinate sorted BAM/SAM file from treatment sample or list
+          of BAM/SAM files from biological replicates
         pattern: "*.{bam,sam}"
         ontologies: []
     - control_bam:
         type: file
-        description: Coordinate sorted BAM/SAM file from control sample or list of BAM/SAM
-          files from control samples
+        description: Coordinate sorted BAM/SAM file from control sample or list of
+          BAM/SAM files from control samples
         pattern: "*.{bam,sam}"
         ontologies: []
   - blacklist_bed:
       type: file
-      description: Bed file containing genomic intervals to exclude from the analysis
+      description: Bed file containing genomic intervals to exclude from the
+        analysis
       pattern: "*.{bed}"
       ontologies: []
 output:
@@ -47,17 +49,10 @@ output:
             e.g. [ id:'test', single_end:false ]
       - "*.narrowPeak":
           type: file
-          description: Narrow peak file containing genomic intervals of significant
-            enrichment
+          description: Narrow peak file containing genomic intervals of
+            significant enrichment
           pattern: "*.{narrowPeak}"
           ontologies: []
-  versions:
-    - versions.yml:
-        type: file
-        description: File containing software versions
-        pattern: "versions.yml"
-        ontologies:
-          - edam: http://edamontology.org/format_3750 # YAML
   bedgraph_pvalues:
     - - meta:
           type: map
@@ -99,9 +94,31 @@ output:
             e.g. [ id:'test', single_end:false ]
       - "*.duplicates.txt":
           type: file
-          description: Text output file containing intervals corresponding to PCR duplicates
+          description: Text output file containing intervals corresponding to PCR
+            duplicates
           pattern: "*.{intervals.txt}"
           ontologies: []
+  versions_genrich:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - genrich:
+          type: string
+          description: The name of the tool
+      - Genrich --version 2>&1 | head -1 | sed "s/Genrich, version //":
+          type: eval
+          description: The expression to obtain the version of the tool
+topics:
+  versions:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - genrich:
+          type: string
+          description: The name of the tool
+      - Genrich --version 2>&1 | head -1 | sed "s/Genrich, version //":
+          type: eval
+          description: The expression to obtain the version of the tool
 authors:
   - "@JoseEspinosa"
   - "@samuelruizperez"
