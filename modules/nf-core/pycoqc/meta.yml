@@ -1,5 +1,6 @@
 name: pycoqc
-description: write your description here
+description: Computes metrics and generates interactive QC plots for Oxford
+  Nanopore technologies sequencing data
 keywords:
   - qc
   - quality control
@@ -7,13 +8,14 @@ keywords:
   - nanopore
 tools:
   - pycoqc:
-      description: PycoQC computes metrics and generates interactive QC plots for Oxford
-        Nanopore technologies sequencing data
+      description: PycoQC computes metrics and generates interactive QC plots for
+        Oxford Nanopore technologies sequencing data
       homepage: https://github.com/tleonardi/pycoQC
       documentation: https://tleonardi.github.io/pycoQC/
       tool_dev_url: https://github.com/tleonardi/pycoQC
       doi: "10.21105/joss.01236"
-      licence: ["GNU General Public v3 (GPL v3)"]
+      licence:
+        - "GNU General Public v3 (GPL v3)"
       identifier: biotools:pycoqc
 input:
   - - meta:
@@ -48,14 +50,64 @@ output:
           description: Results in JSON format
           pattern: "*.{json}"
           ontologies:
-            - edam: http://edamontology.org/format_3464 # JSON
+            - edam: http://edamontology.org/format_3464
+  multiqc_report:
+    - - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - ${task.process}:
+          type: string
+          description: The process
+      - pycoqc:
+          type: string
+          description: The tool name
+      - "*.json":
+          type: file
+          description: Results in JSON format
+          pattern: "*.{json}"
+          ontologies:
+            - edam: http://edamontology.org/format_3464
+  versions_pycoqc:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - pycoqc:
+          type: string
+          description: The name of the tool
+      - pycoQC --version 2>&1 | sed "s/pycoQC v//":
+          type: eval
+          description: The expression to obtain the version of the tool
+topics:
+  multiqc_files:
+    - - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - ${task.process}:
+          type: string
+          description: The process
+      - pycoqc:
+          type: string
+          description: The tool name
+      - "*.json":
+          type: file
+          description: Results in JSON format
+          pattern: "*.{json}"
+          ontologies:
+            - edam: http://edamontology.org/format_3464
   versions:
-    - versions.yml:
-        type: file
-        description: File containing software versions
-        pattern: "versions.yml"
-        ontologies:
-          - edam: http://edamontology.org/format_3750 # YAML
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - pycoqc:
+          type: string
+          description: The name of the tool
+      - pycoQC --version 2>&1 | sed "s/pycoQC v//":
+          type: eval
+          description: The expression to obtain the version of the tool
 authors:
   - "@joseespinosa"
   - "@drpatelh"
