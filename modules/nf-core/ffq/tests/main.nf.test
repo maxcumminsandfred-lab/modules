@@ -47,4 +47,24 @@ nextflow_process {
         }
     }
 
+    test("test-ffq-stub") {
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = [ 'SRR9990627' ]
+
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+
 }
