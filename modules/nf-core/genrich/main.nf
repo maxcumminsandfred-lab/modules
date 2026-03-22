@@ -13,12 +13,11 @@ process GENRICH {
 
     output:
     tuple val(meta), path("*.narrowPeak")                     , emit: peak
-    path "versions.yml"                                       , emit: versions
-
     tuple val(meta), path("*.pvalues.bedGraph"), optional:true, emit: bedgraph_pvalues
     tuple val(meta), path("*.pileup.bedGraph") , optional:true, emit: bedgraph_pileup
     tuple val(meta), path("*.intervals.bed")   , optional:true, emit: bed_intervals
     tuple val(meta), path("*.duplicates.txt")  , optional:true, emit: duplicates
+    tuple val("${task.process}"), val('genrich'), eval('Genrich --version 2>&1 | head -1 | sed "s/Genrich, version //"'), topic: versions, emit: versions_genrich
 
     when:
     task.ext.when == null || task.ext.when
@@ -45,10 +44,15 @@ process GENRICH {
         $control \\
         $blacklist \\
         -o ${prefix}.narrowPeak
+    """
 
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        genrich: \$(echo \$(Genrich --version 2>&1) | sed 's/^Genrich, version //; s/ .*\$//')
-    END_VERSIONS
+    stub:
+    def prefix = task.ext.prefix ?: "${meta.id}"
+    """
+    touch ${prefix}.narrowPeak
+    touch ${prefix}.pvalues.bedGraph
+    touch ${prefix}.pileup.bedGraph
+    touch ${prefix}.intervals.bed
+    touch ${prefix}.duplicates.txt
     """
 }
