@@ -11,9 +11,10 @@ process PYCOQC {
     tuple val(meta), path(summary)
 
     output:
-    tuple val(meta), path("*.html"), emit: html
-    tuple val(meta), path("*.json"), emit: json
-    path  "versions.yml"           , emit: versions
+    tuple val(meta), path("*.html")                                                                                    , emit: html
+    tuple val(meta), path("*.json")                                                                                    , emit: json
+    tuple val(meta), val("${task.process}"), val('pycoqc'), path("*.json")                                             , topic: multiqc_files, emit: multiqc_report
+    tuple val("${task.process}"), val('pycoqc'), eval('pycoQC --version 2>&1 | sed "s/pycoQC v//"'), topic: versions   , emit: versions_pycoqc
 
     when:
     task.ext.when == null || task.ext.when
@@ -27,10 +28,12 @@ process PYCOQC {
         -f $summary \\
         -o ${prefix}.html \\
         -j ${prefix}.json
+    """
 
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        pycoqc: \$(pycoQC --version 2>&1 | sed 's/^.*pycoQC v//; s/ .*\$//')
-    END_VERSIONS
+    stub:
+    def prefix = task.ext.prefix ?: "${meta.id}"
+    """
+    touch ${prefix}.html
+    touch ${prefix}.json
     """
 }
